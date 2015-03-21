@@ -24,6 +24,6 @@ void chat_say(int argc, char **argv);
 void chat_join(int argc, char **argv);
 void *chat_udp_server_loop(void *arg);
 void chat_join(int argc, char **argv);
-
+void chat_init(void);
 
 #endif /* CHAT_H */

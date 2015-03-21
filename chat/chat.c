@@ -11,6 +11,11 @@
 
 char addr_str[IPV6_MAX_ADDR_STR_LEN];
 
+void chat_say(int argc, char **argv);
+void chat_join(int argc, char **argv);
+void chat_udp_send(ipv6_addr_t *dest, uint16_t port, char *payload, size_t len);
+void *chat_udp_server_loop(void *arg);
+
 void chat_say(int argc, char **argv)
 {
     if (argc != 2) {
@@ -23,6 +28,7 @@ void chat_say(int argc, char **argv)
     ipv6_addr_init(&dest_addr, 0xff02, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1);
     chat_udp_send(&dest_addr, CHAT_PORT, argv[1], strlen(argv[1]));
 }
+
 
 void chat_join(int argc, char **argv)
 {
@@ -81,7 +87,7 @@ void *chat_udp_server_loop(void *arg)
     if (-1 == socket_base_bind(sock, &sa, sizeof(sa))) {
         printf("UDP Server: Error bind failed!\n");
         socket_base_close(sock);
-        return;
+        return NULL;
     }
 
     printf("Listening for incoming UDP connection at port %" PRIu16 "\n", CHAT_PORT);
@@ -97,5 +103,5 @@ void *chat_udp_server_loop(void *arg)
     }
 
     socket_base_close(sock);
-    return;
+    return NULL;
 }

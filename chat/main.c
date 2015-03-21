@@ -24,6 +24,8 @@ int main(void)
 {
     sixlowpan_lowpan_init_interface(IF_ID);
 
+    chat_init();
+
     /* Start the UDP server thread */
     chat_udp_server_pid = thread_create(udp_server_stack_buffer,
                                              sizeof(udp_server_stack_buffer),

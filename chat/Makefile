@@ -18,6 +18,8 @@ CFLAGS += -DDEVELHELP
 # Change this to 0 show compiler invocation lines by default:
 export QUIET ?= 1
 
+USEPKG=microcoap
+
 # Modules to include:
 USEMODULE += shell
 USEMODULE += shell_commands

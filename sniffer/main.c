@@ -131,25 +131,11 @@ void init_transceiver(void)
     transceiver_start();
     transceiver_register(transceivers, radio_pid);
 
-    msg_t mesg;
-    mesg.type = SET_CHANNEL;
-    mesg.content.ptr = (char *) &tcmd;
+    char *args1[] = { "chan", "11" };
+    _transceiver_get_set_channel_handler(2, args1);
 
-    uint16_t c = 10;
-
-    tcmd.transceivers = TRANSCEIVER_DEFAULT;
-    tcmd.data = &c;
-    printf("Set transceiver to channel %u\n", c);
-    msg_send(&mesg, transceiver_pid);
-
-    mesg.type = SET_MONITOR;
-    mesg.content.ptr = (char *) &tcmd;
-
-    uint16_t v = 1;
-
-    tcmd.data = &v;
-    printf("Set transceiver into monitor mode\n");
-    msg_send(&mesg, transceiver_pid);
+    char *args2[] = { "monitor", "1" };
+    _transceiver_monitor_handler(2, args2);
 }
 
 static int shell_readc(void)

@@ -3,7 +3,7 @@
 
 #include "kernel.h"
 #include "ipv6.h"
-
+#include "coap.h"
 
 #define CHAT_PORT (12345)
 
@@ -18,7 +18,6 @@
  * @brief   Helper variable for IP address printing
  */
 extern char addr_str[IPV6_MAX_ADDR_STR_LEN];
-
 
 void chat_say(int argc, char **argv);
 void chat_join(int argc, char **argv);

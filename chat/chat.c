@@ -1,4 +1,4 @@
-#include <stdint.h>
+ #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -17,15 +17,22 @@ void chat_say(int argc, char **argv);
 void chat_join(int argc, char **argv);
 void chat_udp_send(ipv6_addr_t *dest, uint16_t port, char *payload, size_t len);
 void *chat_udp_server_loop(void *arg);
-void chat_init(void);
-
-char addr_str[IPV6_MAX_ADDR_STR_LEN];
+static int handle_get_response(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo);
 char chan_name[MAX_CHAN_LEN];
 coap_endpoint_path_t chat_path = {2, {"chat", chan_name}};
 
+char addr_str[IPV6_MAX_ADDR_STR_LEN];
 ipv6_addr_t dest_addr;
 uint8_t buf[BUFSZ];
 size_t buflen = BUFSZ;
+
+
+/* The endpoints (resource & request type) this server is listening on*/
+const coap_endpoint_t endpoints[] =
+{
+    {COAP_METHOD_GET, handle_get_response, &chat_path, "ct=0"},
+    {(coap_method_t)0, NULL, NULL, NULL} /* marks the end of the endpoints array */
+};
 
 void chat_say(int argc, char **argv)
 {
@@ -44,7 +51,6 @@ void chat_say(int argc, char **argv)
     printf("! unable to built PUT request\n");
 }
 
-
 void chat_join(int argc, char **argv)
 {
     if (argc != 1) {
@@ -59,7 +65,6 @@ void chat_join(int argc, char **argv)
 
     strcpy(chan_name, argv[1]);
 }
-
 
 void chat_udp_send(ipv6_addr_t *dest, uint16_t port, char *payload, size_t len)
 {
@@ -101,16 +106,29 @@ void chat_init(void)
     strcpy(chan_name, "default");
 }
 
+/* The handler which handles the path /foo/bar */
+static int handle_get_response(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo)
+{
+    printf("%s\n", (char*) inpkt->payload.p);
+    const uint8_t * response = "";
+    /* NOTE: COAP_RSPCODE_CONTENT only works in a packet answering a GET. */
+    return coap_make_response(scratch, outpkt, response, strlen((char*)response),
+                              id_hi, id_lo, &inpkt->tok, COAP_RSPCODE_CONTENT, COAP_CONTENTTYPE_TEXT_PLAIN);
+}
+
 // signatures with all them pointers because it needs
 // to be passed to a thread
 void *chat_udp_server_loop(void *arg)
 {
     sockaddr6_t sa;
-    char buffer_main[UDP_BUFFER_SIZE];
+    uint8_t buffer_main[UDP_BUFFER_SIZE];
     uint32_t fromlen;
-    int sock;
+    int sock, resp_code;
     fromlen = sizeof(sa);
 
+    coap_packet_t pkt;
+    uint8_t scratch_raw[BUFSZ];
+    coap_rw_buffer_t scratch_buf = {scratch_raw, sizeof(scratch_raw)};
     sock = socket_base_socket(PF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
     memset(&sa, 0, sizeof(sa));
@@ -127,12 +145,20 @@ void *chat_udp_server_loop(void *arg)
 
     while (1) {
         int32_t recsize = socket_base_recvfrom(sock, (void *)buffer_main, UDP_BUFFER_SIZE, 0, &sa, &fromlen);
+        printf("Received packet!\n");
 
         if (recsize < 0) {
             printf("ERROR: recsize < 0!\n");
         }
-
-        printf("UDP packet received, payload: %s\n", buffer_main);
+        else if (0 != (resp_code = coap_parse(&pkt, buffer_main, recsize))) {
+            printf("Bad packet; response code=%d\n", resp_code);
+        }
+        else {
+            coap_packet_t rsppkt; /* Space for our (non-existing) response packet  */
+            printf("content:\n");
+            coap_dumpPacket(&pkt);
+            coap_handle_req(&scratch_buf, &pkt, &rsppkt);
+        }
     }
 
     socket_base_close(sock);

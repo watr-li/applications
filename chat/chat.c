@@ -34,7 +34,7 @@ size_t buflen = BUFSZ;
 /* The endpoints (resource & request type) this server is listening on*/
 const coap_endpoint_t endpoints[] =
 {
-    {COAP_METHOD_GET, handle_get_response, &chat_path, "ct=0"},
+    {COAP_METHOD_PUT, handle_get_response, &chat_path, "ct=0"},
     {(coap_method_t)0, NULL, NULL, NULL} /* marks the end of the endpoints array */
 };
 

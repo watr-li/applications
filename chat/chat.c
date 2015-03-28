@@ -46,14 +46,13 @@ void chat_set_nick(int argc, char **argv)
         return;
     }
 
-    strcpy(chan_name, argv[1]);
-    printf("Nick set to %s\n", argv[1]);
+    strcpy(nick, argv[1]);
+    printf("Nick set to %s\n", nick);
 }
 
 void chat_say(int argc, char **argv)
 {
-    // TODO should be <2
-    if (argc != 2) {
+    if (argc < 2) {
         puts("! Invalid number of parameters");
         printf("  usage: %s <message>\n", argv[0]);
         return;
@@ -86,9 +85,6 @@ void chat_say(int argc, char **argv)
 
     memset(buf, 0, BUFSZ);
     buflen = BUFSZ;
-
-
-
 }
 
 void chat_join(int argc, char **argv)

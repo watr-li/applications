@@ -10,8 +10,10 @@
 
 #include "chat.h"
 
+// TODO set nick
 const shell_command_t shell_commands[] = {
-    {"say", "Send a message on the current channel", chat_say},
+    {"nick", "Set nickname", chat_set_nick},
+    {"say", "Send a message of <=140 characters on the current channel", chat_say},
     {"join", "Switch to another channel", chat_join},
     {NULL, NULL, NULL}
 };

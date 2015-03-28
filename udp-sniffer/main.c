@@ -8,27 +8,18 @@
 #include "shell_commands.h"
 #include "board_uart0.h"
 
-#include "chat.h"
+#include "sniffer.h"
 
 char udp_server_stack_buffer[KERNEL_CONF_STACKSIZE_MAIN];
-
-kernel_pid_t chat_udp_server_pid;
+kernel_pid_t udp_server_pid;
 
 int main(void)
 {
     sixlowpan_lowpan_init_interface(IF_ID);
 
-    /* Start the UDP server thread */
-    chat_udp_server_pid = thread_create(udp_server_stack_buffer,
+    udp_server_pid = thread_create(udp_server_stack_buffer,
                                              sizeof(udp_server_stack_buffer),
                                              PRIORITY_MAIN, CREATE_STACKTEST,
-                                             chat_udp_server_loop, NULL,
-                                             "chat_udp_server_loop");
-
-    /* Open the UART0 for the shell */
-    // posix_open(uart0_handler_pid, 0);
-
-    // shell_t shell;
-    // shell_init(&shell, shell_commands, UART0_BUFSIZE, uart0_readc, uart0_putc);
-    // shell_run(&shell);
+                                             udp_server_loop, NULL,
+                                             "udp_server_loop");
 }

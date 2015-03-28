@@ -7,35 +7,21 @@
 #include "thread.h"
 #include "socket_base/socket.h"
 #include "net_help.h"
-#include "chat.h"
-
-#define BUFSZ 250              // TODO: size ok?
-#define MAX_CHAN_LEN 10        /* maximum character count of the channel id */
-
-void *chat_udp_server_loop(void *arg);
-char chan_name[MAX_CHAN_LEN];
+#include "sniffer.h"
 
 char addr_str[IPV6_MAX_ADDR_STR_LEN];
 ipv6_addr_t dest_addr;
-uint8_t buf[BUFSZ];
-size_t buflen = BUFSZ;
+uint8_t buf[SNIFFER_BUFFER_SIZE];
+size_t buflen = SNIFFER_BUFFER_SIZE;
 
-
-
-
-
-
-// signatures with all them pointers because it needs
-// to be passed to a thread
-void *chat_udp_server_loop(void *arg)
+void *udp_server_loop(void *arg)
 {
     sockaddr6_t sa;
     uint8_t buffer_main[UDP_BUFFER_SIZE];
     uint32_t fromlen;
-    int sock, resp_code;
+    int sock;
     fromlen = sizeof(sa);
 
-    uint8_t scratch_raw[BUFSZ];
     sock = socket_base_socket(PF_INET6, SOCK_DGRAM, IPPROTO_UDP);
 
     memset(&sa, 0, sizeof(sa));

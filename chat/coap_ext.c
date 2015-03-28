@@ -19,7 +19,7 @@
 
 #include "coap_ext.h"
 
-#define ENABLE_DEBUG    (0)
+#define ENABLE_DEBUG    (1)
 #include "debug.h"
 
 int seqnum = 12345;
@@ -77,7 +77,7 @@ int coap_ext_build_PUT(uint8_t *buf, size_t *buflen, char *payload, coap_endpoin
     req_pkt_sz = sizeof(req_pkt);
 
     if (*buflen < req_pkt_sz) {
-        DEBUG("Error: buflen too small:\n\tbuflen:%zd\n\treq_pkt_sz:%zd\n", buflen, req_pkt_sz);
+        DEBUG("Error: buflen too small:\n\tbuflen:%zd\n\treq_pkt_sz:%zd\n", *buflen, req_pkt_sz);
         return -1;
     }
 

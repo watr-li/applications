@@ -106,7 +106,6 @@ void chat_udp_send(ipv6_addr_t *dest, uint16_t port, char *payload, size_t len)
 
 void chat_init(void)
 {
-    ipv6_addr_t dest_addr;
     /* All multicast everything */
     ipv6_addr_init(&dest_addr, 0xff02, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1);
     strcpy(chan_name, "default");

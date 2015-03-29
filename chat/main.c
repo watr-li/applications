@@ -13,7 +13,7 @@
 // TODO set nick
 const shell_command_t shell_commands[] = {
     {"nick", "Set nickname", chat_set_nick},
-    {"say", "Send a message on the current channel", chat_say},
+    {"say", "Send a message of <=140 characters on the current channel", chat_say},
     {"join", "Switch to another channel", chat_join},
     {NULL, NULL, NULL}
 };

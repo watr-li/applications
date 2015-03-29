@@ -13,6 +13,7 @@
 #define BUFSZ 150              // TODO: size ok?
 #define MAX_CHAN_LEN 10        /* maximum character count of the channel id */
 #define MAX_NICK_LEN 7         /* maximum character count of the nickname */
+#define MAX_MSG_LEN  140       /* enough for twitter, enough for us */
 
 void chat_say(int argc, char **argv);
 void chat_join(int argc, char **argv);
@@ -21,6 +22,7 @@ void *chat_udp_server_loop(void *arg);
 static int handle_get_response(coap_rw_buffer_t *scratch, const coap_packet_t *inpkt, coap_packet_t *outpkt, uint8_t id_hi, uint8_t id_lo);
 char nick[MAX_NICK_LEN];
 char chan_name[MAX_CHAN_LEN];
+char chat_msg[MAX_CHAN_LEN];
 coap_endpoint_path_t chat_path = {2, {"chat", chan_name}};
 
 char addr_str[IPV6_MAX_ADDR_STR_LEN];
@@ -57,8 +59,23 @@ void chat_say(int argc, char **argv)
         return;
     }
 
-    // TODO: concat arguments, prepend nick
+    /* initialize chat message with nickname prefix*/
+    strcpy(chat_msg, nick);
+    strcat(chat_msg, ":");
+    int msg_len = strlen(chat_msg);
 
+    for (int i = 1; i < argc; i++ ) {
+        msg_len += strlen(argv[i]) + 1; // account for additional whitespace
+        if (msg_len > MAX_MSG_LEN) {
+            printf("! message too long.\n");
+            return;
+        }
+
+        strcat(chat_msg, " ");
+        strcat(chat_msg, argv[i]);
+    }
+
+    printf("Sending chat message %s\n", chat_msg);
     /* wrap our message into a CoAP packet. the target resource is chat/<channel name> */
     if (0 == coap_ext_build_PUT(buf, &buflen, argv[1], &chat_path)) {
         /* Fly, little packet! */

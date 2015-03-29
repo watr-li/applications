@@ -19,6 +19,7 @@
  */
 extern char addr_str[IPV6_MAX_ADDR_STR_LEN];
 
+void chat_set_nick(int argc, char **argv);
 void chat_say(int argc, char **argv);
 void chat_join(int argc, char **argv);
 void *chat_udp_server_loop(void *arg);

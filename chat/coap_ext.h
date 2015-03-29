@@ -25,13 +25,18 @@
 #include <coap.h>
 
 /**
- * @brief   Build a PUT request. 
+ * @brief   Build a PUT request.
  *          Only supports 0=text/plain payload.
  *
- * @param[in] buf
+ * @param[in] buf      The buffer into which the resulting CoAP packet will be written.
+ * @param[in] buflen   Pointer to the length of buf. After successful execution
+ *                     of the function, the value buflen points to will have changed to the
+ *                     length of the new data in buf.
+ * @param[in] payload  The payload of the PUT request to be built.
+ * @param[in] path     The resource path of the PUT request to be built.
  *
  * @return                  0 on success
- * @return                  -1 on error
+ * @return                 -1 on error
  */
 
 int coap_ext_build_PUT(uint8_t *buf, size_t *buflen, char *payload, coap_endpoint_path_t *path);

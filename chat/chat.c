@@ -52,8 +52,7 @@ void chat_set_nick(int argc, char **argv)
 
 void chat_say(int argc, char **argv)
 {
-    // TODO should be <2
-    if (argc != 2) {
+    if (argc < 2) {
         puts("! Invalid number of parameters");
         printf("  usage: %s <message>\n", argv[0]);
         return;

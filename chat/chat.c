@@ -46,8 +46,8 @@ void chat_set_nick(int argc, char **argv)
         return;
     }
 
-    strcpy(chan_name, argv[1]);
-    printf("Nick set to %s\n", argv[1]);
+    strcpy(nick, argv[1]);
+    printf("Nick set to %s\n", nick);
 }
 
 void chat_say(int argc, char **argv)
@@ -86,9 +86,6 @@ void chat_say(int argc, char **argv)
 
     memset(buf, 0, BUFSZ);
     buflen = BUFSZ;
-
-
-
 }
 
 void chat_join(int argc, char **argv)

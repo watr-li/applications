@@ -10,7 +10,7 @@
 #include "chat.h"
 #include "coap_ext.h"
 
-#define BUFSZ 150              // TODO: size ok?
+#define BUFSZ 250              // TODO: size ok?
 #define MAX_CHAN_LEN 10        /* maximum character count of the channel id */
 #define MAX_NICK_LEN 7         /* maximum character count of the nickname */
 #define MAX_MSG_LEN  140       /* enough for twitter, enough for us */
@@ -80,9 +80,15 @@ void chat_say(int argc, char **argv)
     if (0 == coap_ext_build_PUT(buf, &buflen, argv[1], &chat_path)) {
         /* Fly, little packet! */
         chat_udp_send(&dest_addr, CHAT_PORT, (char*) buf, buflen);
+    } else {
+        printf("! unable to built PUT request\n");
     }
 
-    printf("! unable to built PUT request\n");
+    memset(buf, 0, BUFSZ);
+    buflen = BUFSZ;
+
+
+
 }
 
 void chat_join(int argc, char **argv)
